@@ -1,0 +1,47 @@
+{
+  "name": "api-product-check",
+  "version": "1.0.0",
+  "description": "Review the OpenAPI 3 description of a software product's API for what its customers depend on: operations anyone can call, tenants chosen by the caller, lists without paging, missing rate limit and error responses, duplicate operation ids. Reads a file, fetches nothing, no dependencies.",
+  "type": "module",
+  "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "bin": {
+    "api-product-check": "bin/api-product-check.js"
+  },
+  "files": [
+    "bin",
+    "src",
+    "docs",
+    "examples",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "test": "node --test \"test/*.test.js\"",
+    "test:coverage": "node --test --experimental-test-coverage \"test/*.test.js\"",
+    "check": "node tools/check.mjs",
+    "example": "node bin/api-product-check.js examples/openapi.json"
+  },
+  "keywords": [
+    "openapi",
+    "api",
+    "multi-tenant",
+    "saas",
+    "api-security",
+    "software-product",
+    "lint",
+    "cli"
+  ],
+  "author": "INNERLUXES <info@innerluxes.dev>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/INNERLUXES/api-product-check.git"
+  },
+  "homepage": "https://innerluxes.dev/software-development/product"
+}

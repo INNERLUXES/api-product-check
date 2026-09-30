@@ -1,0 +1,81 @@
+{
+  "openapi": "3.1.0",
+  "info": { "title": "Example task tracker API (made up)", "version": "1.4.0" },
+  "servers": [{ "url": "https://api.example.com/v1" }],
+  "security": [{ "bearer": [] }],
+  "components": {
+    "securitySchemes": { "bearer": { "type": "http", "scheme": "bearer" } },
+    "parameters": {
+      "OrgId": { "name": "orgId", "in": "path", "required": true, "schema": { "type": "string" } },
+      "Limit": { "name": "limit", "in": "query", "schema": { "type": "integer", "maximum": 100 } },
+      "Cursor": { "name": "cursor", "in": "query", "schema": { "type": "string" } }
+    },
+    "schemas": {
+      "Task": { "type": "object", "properties": { "id": { "type": "string" }, "title": { "type": "string" } } },
+      "TaskList": { "type": "object", "properties": { "data": { "type": "array", "items": { "$ref": "#/components/schemas/Task" } }, "next": { "type": "string" } } },
+      "NewTask": { "type": "object", "properties": { "title": { "type": "string" }, "workspace_id": { "type": "string" } } },
+      "Error": { "type": "object", "properties": { "code": { "type": "string" }, "message": { "type": "string" } } }
+    },
+    "responses": {
+      "Error": { "description": "Error", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } } },
+      "TooMany": { "description": "Rate limit reached", "headers": { "Retry-After": { "schema": { "type": "integer" } } } }
+    }
+  },
+  "paths": {
+    "/health": {
+      "get": {
+        "operationId": "health",
+        "security": [],
+        "x-public": true,
+        "responses": { "200": { "description": "Up" } }
+      }
+    },
+    "/signup": {
+      "post": {
+        "operationId": "signUp",
+        "security": [],
+        "x-public": true,
+        "responses": { "201": { "description": "Account created" }, "400": { "$ref": "#/components/responses/Error" } }
+      }
+    },
+    "/admin/reindex": {
+      "post": {
+        "operationId": "reindex",
+        "security": [],
+        "responses": { "202": { "description": "Started" }, "403": { "$ref": "#/components/responses/Error" }, "429": { "$ref": "#/components/responses/TooMany" } }
+      }
+    },
+    "/orgs/{orgId}/tasks": {
+      "parameters": [{ "$ref": "#/components/parameters/OrgId" }],
+      "get": {
+        "operationId": "listTasks",
+        "parameters": [{ "$ref": "#/components/parameters/Limit" }, { "$ref": "#/components/parameters/Cursor" }],
+        "responses": {
+          "200": { "description": "Tasks", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/TaskList" } } } },
+          "401": { "$ref": "#/components/responses/Error" },
+          "429": { "$ref": "#/components/responses/TooMany" }
+        }
+      },
+      "post": {
+        "operationId": "createTask",
+        "requestBody": { "content": { "application/json": { "schema": { "$ref": "#/components/schemas/NewTask" } } } },
+        "responses": { "201": { "description": "Created" }, "400": { "$ref": "#/components/responses/Error" }, "429": { "$ref": "#/components/responses/TooMany" } }
+      }
+    },
+    "/tasks/{id}/comments": {
+      "get": {
+        "operationId": "listComments",
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "responses": { "200": { "description": "Comments", "content": { "application/json": { "schema": { "type": "array", "items": { "type": "object" } } } } } }
+      }
+    },
+    "/reports/export": {
+      "get": {
+        "operationId": "createTask",
+        "security": [{}, { "bearer": [] }],
+        "parameters": [{ "name": "account_id", "in": "query", "schema": { "type": "string" } }],
+        "responses": { "200": { "description": "CSV file" }, "default": { "$ref": "#/components/responses/Error" } }
+      }
+    }
+  }
+}

@@ -1,0 +1,6 @@
+# Every change is reviewed by a maintainer.
+* @innerluxesdev
+
+# The checks and the reading of the document decide every finding the tool prints; changes need extra care.
+/src/checks.js @innerluxesdev
+/src/spec.js @innerluxesdev
